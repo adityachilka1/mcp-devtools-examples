@@ -7,6 +7,6 @@
     "drive": "node ./drive.js"
   },
   "devDependencies": {
-    "mcp-devtools": "^0.1.0"
+    "@adityachilka/mcp-devtools": "^0.1.0"
   }
 }

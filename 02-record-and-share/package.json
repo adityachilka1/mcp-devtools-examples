@@ -7,6 +7,6 @@
     "view": "mcp-devtools open ./out/session.mcptrace"
   },
   "devDependencies": {
-    "mcp-devtools": "^0.1.0"
+    "@adityachilka/mcp-devtools": "^0.1.0"
   }
 }
