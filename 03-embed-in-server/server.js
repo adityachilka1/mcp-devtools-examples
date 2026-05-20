@@ -1,31 +1,50 @@
 #!/usr/bin/env node
-// Demonstrates `mcp-devtools/embed` — five extra lines attach the inspector
-// to an MCP server you author. The rest of the file is a stock MCP server
-// that lists one tool and answers it.
+// Demonstrates `mcp-devtools/embed` v0.1.1+ with the new `devtools.wrap()` API.
 //
-// NOTE: this example references the @modelcontextprotocol/sdk API surface.
-// The exact import paths shift between SDK versions; if yours differs,
-// check the SDK README. The `devtools.attach()` call is the only line
-// specific to mcp-devtools.
+// The wrap() function takes any MCP-SDK-compatible transport and returns the
+// same object with `send`/`onMessage` instrumented. Pass the wrapped transport
+// to `server.connect(transport)` — the SDK Server's onMessage assignment is
+// intercepted by our getter/setter and routed through the inspector.
+//
+// Run:
+//   pnpm install
+//   pnpm start          # in one shell
+//   pnpm drive          # in another
+//   open http://localhost:7456/inspect
 import readline from "node:readline";
-import { devtools } from "mcp-devtools/embed";
+import { devtools } from "@adityachilka/mcp-devtools/embed";
 
-// ─── Minimal MCP server (stdio, JSON-RPC) ──────────────────────────────────
-const rl = readline.createInterface({ input: process.stdin, terminal: false });
-const send = (m) => process.stdout.write(JSON.stringify(m) + "\n");
+// A minimal MCP transport. The real `@modelcontextprotocol/sdk` ships
+// StdioServerTransport / StreamableHTTPServerTransport; this is a structurally
+// equivalent shim so the example runs without the SDK as a dep.
+class StdioTransportShim {
+  constructor() {
+    /** @type {((msg:unknown)=>void) | undefined} */
+    this.onMessage = undefined;
+    const rl = readline.createInterface({ input: process.stdin, terminal: false });
+    rl.on("line", (line) => {
+      if (!line.trim()) return;
+      try {
+        this.onMessage?.(JSON.parse(line));
+      } catch {
+        /* malformed line — ignore in this demo */
+      }
+    });
+    rl.on("close", () => process.exit(0));
+  }
+  send(msg) {
+    process.stdout.write(JSON.stringify(msg) + "\n");
+  }
+}
 
-// We expose a structural "server" object so devtools.attach can wrap it
-// without depending on the SDK class shape. In a real SDK-based server,
-// you'd pass the SDK's Server instance directly.
-const fakeTransport = {
-  onMessage: (msg) => handle(msg),
-  send: (msg) => send(msg),
-};
-const server = { _transport: fakeTransport };
+// Wrap the transport BEFORE handing it to your server.
+const transport = await devtools.wrap(new StdioTransportShim(), { port: 7456 });
+process.stderr.write("inspector → http://localhost:7456/inspect\n");
 
-function handle(req) {
+// Minimal MCP server that uses the wrapped transport.
+transport.onMessage = (req) => {
   if (req.method === "initialize") {
-    fakeTransport.send({
+    transport.send({
       jsonrpc: "2.0",
       id: req.id,
       result: {
@@ -35,39 +54,26 @@ function handle(req) {
       },
     });
   } else if (req.method === "tools/list") {
-    fakeTransport.send({
+    transport.send({
       jsonrpc: "2.0",
       id: req.id,
       result: {
-        tools: [
-          { name: "echo", description: "Returns its input", inputSchema: { type: "object" } },
-        ],
+        tools: [{ name: "echo", description: "Returns its input", inputSchema: { type: "object" } }],
       },
     });
   } else if (req.method === "tools/call") {
-    fakeTransport.send({
+    transport.send({
       jsonrpc: "2.0",
       id: req.id,
-      result: { content: [{ type: "text", text: JSON.stringify(req.params?.arguments ?? {}) }] },
+      result: {
+        content: [{ type: "text", text: JSON.stringify(req.params?.arguments ?? {}) }],
+      },
     });
   } else if (req.id != null) {
-    fakeTransport.send({
+    transport.send({
       jsonrpc: "2.0",
       id: req.id,
       error: { code: -32601, message: `unknown method: ${req.method}` },
     });
   }
-}
-
-rl.on("line", (line) => {
-  if (!line.trim()) return;
-  try {
-    fakeTransport.onMessage(JSON.parse(line));
-  } catch {
-    /* malformed input — log and ignore */
-  }
-});
-
-// ─── The whole point of this example ───────────────────────────────────────
-await devtools.attach(server, { port: 7456 });
-process.stderr.write("inspector → http://localhost:7456/inspect\n");
+};
