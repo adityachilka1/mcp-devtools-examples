@@ -1,0 +1,12 @@
+{
+  "name": "mcp-devtools-example-02-record-and-share",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "capture": "mkdir -p out && mcp-devtools record --upstream \"node ../01-proxy-basic/echo-server.js\" --out ./out/session.mcptrace < ./fixtures/requests.jsonl",
+    "view": "mcp-devtools open ./out/session.mcptrace"
+  },
+  "devDependencies": {
+    "mcp-devtools": "^0.1.0"
+  }
+}

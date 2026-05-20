@@ -1,0 +1,12 @@
+{
+  "name": "mcp-devtools-example-03-embed-in-server",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node ./server.js",
+    "drive": "node ./drive.js"
+  },
+  "devDependencies": {
+    "mcp-devtools": "^0.1.0"
+  }
+}

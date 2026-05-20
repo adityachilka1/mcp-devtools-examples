@@ -1,0 +1,11 @@
+{
+  "name": "mcp-devtools-example-01-proxy-basic",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "mcp-devtools proxy --upstream \"node ./echo-server.js\""
+  },
+  "devDependencies": {
+    "mcp-devtools": "^0.1.0"
+  }
+}
