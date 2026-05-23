@@ -1,0 +1,76 @@
+# Rename this file to `.github/workflows/mcp-conformance.yml` in your real repo to enable it.
+#
+# This workflow runs `mcp-devtools doctor` against your stdio MCP server on
+# every pull request and every push to `main`, then fails the build if any
+# of the 9 baseline protocol-compliance checks regress.
+#
+# What it catches:
+#   - `tools/list` no longer returns a `tools` array (the most common break)
+#   - a tool stopped declaring `description` or `inputSchema`
+#   - `initialize` stopped returning `protocolVersion` / `serverInfo` / `capabilities`
+#   - unknown methods stopped returning a JSON-RPC error envelope
+#   - request `id`s aren't echoed back correctly
+#   - malformed JSON-RPC frames on the wire
+#
+# The interesting bit is the JSON pipeline at the bottom: `doctor --json`
+# emits a stable single-line envelope to stdout, and `jq` drives the
+# exit-code logic. No string-grepping, no flaky regex on log lines.
+name: mcp-conformance
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  doctor:
+    name: mcp-devtools doctor
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install mcp-devtools
+        # Pin to a specific version in your real repo. `latest` is shown
+        # here only because this is an example.
+        run: npm install --no-audit --no-fund -g '@adityachilka/mcp-devtools@latest'
+
+      - name: Run doctor against ./server.cjs
+        # `doctor --json` writes a single JSON envelope to stdout:
+        #   { version, upstream, summary: { passed, failed, total }, checks: [...] }
+        # We tee it to a file so we can both pretty-print the per-check
+        # summary AND drive the exit-code logic without re-running the probe.
+        run: |
+          set -euo pipefail
+          mcp-devtools doctor --upstream "node ./server.cjs" --json > doctor-report.json
+
+          echo "::group::doctor report"
+          jq '.' doctor-report.json
+          echo "::endgroup::"
+
+          jq -r '
+            "summary: \(.summary.passed)/\(.summary.total) passed (\(.summary.failed) failed)",
+            (.checks[] | "  \(if .passed then "PASS" else "FAIL" end)  \(.name)\(if .message then " — \(.message)" else "" end)")
+          ' doctor-report.json
+
+          FAILED=$(jq -r '.summary.failed' doctor-report.json)
+          if [ "${FAILED}" -gt 0 ]; then
+            echo
+            echo "::error::mcp-devtools doctor reported ${FAILED} failing check(s):"
+            jq -r '.checks[] | select(.passed == false) | "::error::  - \(.name)\(if .message then " — \(.message)" else "" end)"' doctor-report.json
+            exit 1
+          fi
+
+      - name: Upload doctor report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: doctor-report
+          path: doctor-report.json
