@@ -1,0 +1,30 @@
+# Sample terminal output from: ./run-locally.sh
+# The "summary: 9/9 passed" line is the load-bearing one — it's what the
+# matching GitHub Actions workflow keys its exit code off of.
+
+============================================================
+ mcp-devtools example 07 - doctor in CI (local mirror)
+============================================================
+  1. probing server: node ./server.cjs
+  2. running: mcp-devtools doctor --upstream ... --json
+  3. failing on summary.failed > 0
+============================================================
+
+[1/2] running doctor ...
+[2/2] parsing report ...
+
+upstream: node ./server.cjs
+version:  0.1.0
+summary:  9/9 passed (0 failed)
+
+  PASS  initialize responds
+  PASS  initialize.result has protocolVersion
+  PASS  initialize.result has serverInfo
+  PASS  initialize.result has capabilities
+  PASS  tools/list responds with tools array — 2 tools
+  PASS  every tool has name + description + inputSchema
+  PASS  unknown method returns JSON-RPC error envelope
+  PASS  request ids echoed back correctly
+  PASS  no malformed JSON-RPC frames
+
+==> all checks passed. Safe to push.
