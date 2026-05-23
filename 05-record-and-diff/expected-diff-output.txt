@@ -1,0 +1,12 @@
+# Captured output of: mcp-devtools diff ./baseline.mcptrace ./current.mcptrace
+# after the regression in server-v2.cjs (multiply -> product, (a,b) -> (x,y)).
+# Exit code: 1 (non-zero because the traces diverged).
+
+✗ 1 differences across 6 → 6 frames:
+  · frame #4 body differs
+
+# Frame #4 is the inbound tools/list response. Decoding the trace shows
+# the only structural change is the tool surface:
+#
+#   baseline.tools = [add, multiply(a,b)]
+#   current.tools  = [add, product(x,y)]
