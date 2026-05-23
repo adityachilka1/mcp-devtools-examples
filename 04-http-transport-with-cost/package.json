@@ -1,0 +1,8 @@
+{
+  "name": "mcp-devtools-example-04-http",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "./run.sh"
+  }
+}

@@ -20,8 +20,9 @@ Each example is a self-contained directory you can `cd` into and run in under a 
 | [`01-proxy-basic`](./01-proxy-basic) | The 60-second tour. Spin up a fake MCP echo-server, proxy it, see frames stream into the inspector. |
 | [`02-record-and-share`](./02-record-and-share) | Capture a session to `.mcptrace` and reopen it as a shareable bug-report artifact. |
 | [`03-embed-in-server`](./03-embed-in-server) | Bake the inspector into your own MCP server using the `mcp-devtools/embed` API. |
-| [`04-replay-and-diff`](./04-replay-and-diff) *(coming soon)* | Compare two recorded sessions to spot drift across model upgrades. |
-| [`05-ci-snapshot-test`](./05-ci-snapshot-test) *(coming soon)* | Run `mcp-devtools record` in CI and fail the build on protocol-level regressions. |
+| [`04-http-transport-with-cost`](./04-http-transport-with-cost) | Proxy a Streamable-HTTP + SSE MCP server and watch per-call USD cost attribution roll up. |
+| [`05-replay-and-diff`](./05-replay-and-diff) *(coming soon)* | Compare two recorded sessions to spot drift across model upgrades. |
+| [`06-ci-snapshot-test`](./06-ci-snapshot-test) *(coming soon)* | Run `mcp-devtools record` in CI and fail the build on protocol-level regressions. |
 
 ## Quick start
 
