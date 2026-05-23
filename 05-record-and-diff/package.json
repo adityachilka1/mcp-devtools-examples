@@ -1,0 +1,8 @@
+{
+  "name": "mcp-devtools-example-05-record-and-diff",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "./run.sh"
+  }
+}

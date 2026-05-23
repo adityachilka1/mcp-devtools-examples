@@ -21,7 +21,7 @@ Each example is a self-contained directory you can `cd` into and run in under a 
 | [`02-record-and-share`](./02-record-and-share) | Capture a session to `.mcptrace` and reopen it as a shareable bug-report artifact. |
 | [`03-embed-in-server`](./03-embed-in-server) | Bake the inspector into your own MCP server using the `mcp-devtools/embed` API. |
 | [`04-http-transport-with-cost`](./04-http-transport-with-cost) | Proxy a Streamable-HTTP + SSE MCP server and watch per-call USD cost attribution roll up. |
-| [`05-replay-and-diff`](./05-replay-and-diff) *(coming soon)* | Compare two recorded sessions to spot drift across model upgrades. |
+| [`05-record-and-diff`](./05-record-and-diff) | Record a baseline session, record a session against a regressed server, and `diff` the two `.mcptrace` files to catch protocol-level breakage. |
 | [`06-ci-snapshot-test`](./06-ci-snapshot-test) *(coming soon)* | Run `mcp-devtools record` in CI and fail the build on protocol-level regressions. |
 
 ## Quick start
