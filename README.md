@@ -22,7 +22,7 @@ Each example is a self-contained directory you can `cd` into and run in under a 
 | [`03-embed-in-server`](./03-embed-in-server) | Bake the inspector into your own MCP server using the `mcp-devtools/embed` API. |
 | [`04-http-transport-with-cost`](./04-http-transport-with-cost) | Proxy a Streamable-HTTP + SSE MCP server and watch per-call USD cost attribution roll up. |
 | [`05-record-and-diff`](./05-record-and-diff) | Record a baseline session, record a session against a regressed server, and `diff` the two `.mcptrace` files to catch protocol-level breakage. |
-| [`06-ci-snapshot-test`](./06-ci-snapshot-test) *(coming soon)* | Run `mcp-devtools record` in CI and fail the build on protocol-level regressions. |
+| [`06-embed-mode-walkthrough`](./06-embed-mode-walkthrough) | Use `devtools.wrap(transport)` to bake the inspector into your own MCP server in-process — same observability as the proxy, no child process, no stdio dance. |
 
 ## Quick start
 
