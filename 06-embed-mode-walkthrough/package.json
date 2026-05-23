@@ -1,0 +1,11 @@
+{
+  "name": "mcp-devtools-example-06-embed-mode-walkthrough",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "./run.sh"
+  },
+  "devDependencies": {
+    "@adityachilka/mcp-devtools": "^0.1.0"
+  }
+}

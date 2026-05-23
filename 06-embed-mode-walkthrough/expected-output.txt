@@ -1,0 +1,24 @@
+# Sample terminal output from: ./run.sh
+# Frame count is the load-bearing number — proves devtools.wrap() captured
+# both directions of the in-process traffic.
+
+============================================================
+ mcp-devtools example 06 - embed-mode walkthrough
+============================================================
+  1. installing deps (if needed)
+  2. starting server + inspector on port :7456
+  3. running in-process client to generate frames
+  4. http://localhost:7456/inspect  <- open this
+  Ctrl-C to shut down.
+============================================================
+inspector -> http://localhost:7456/inspect
+[client] driving the embed-mode server in-process ...
+
+[client] initialize -> { name: 'embed-mode-walkthrough', version: '0.0.1' }
+[client] tools/list -> add, echo
+[client] add(21, 21) -> 42
+[client] echo(...) -> frames captured by mcp-devtools.embed
+
+[client] 8 frames captured by the inspector.
+[client] open http://localhost:7456/inspect to browse them.
+[client] Ctrl-C to shut down.
