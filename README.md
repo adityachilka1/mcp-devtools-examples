@@ -24,6 +24,7 @@ Each example is a self-contained directory you can `cd` into and run in under a 
 | [`05-record-and-diff`](./05-record-and-diff) | Record a baseline session, record a session against a regressed server, and `diff` the two `.mcptrace` files to catch protocol-level breakage. |
 | [`06-embed-mode-walkthrough`](./06-embed-mode-walkthrough) | Use `devtools.wrap(transport)` to bake the inspector into your own MCP server in-process — same observability as the proxy, no child process, no stdio dance. |
 | [`07-doctor-ci`](./07-doctor-ci) | Wire `mcp-devtools doctor --json` into a GitHub Actions workflow that fails CI on protocol-compliance regressions (missing tool fields, malformed envelopes, dropped `tools/list`). |
+| [`08-replay-snapshot-ci`](./08-replay-snapshot-ci) | Commit a recorded `.mcptrace` as a test fixture and replay it via `serve --replay` so client snapshot tests run against a deterministic, vendor-free MCP backend in CI. |
 
 ## Quick start
 
