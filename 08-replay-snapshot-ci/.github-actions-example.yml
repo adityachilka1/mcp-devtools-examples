@@ -1,0 +1,46 @@
+# Rename this to `.github/workflows/replay-snapshot.yml` in your real repo to enable.
+#
+# This workflow runs the snapshot test in `client-test.mjs` against the
+# recorded `fixture.mcptrace`, replayed by `mcp-devtools serve --replay`.
+# It's a stable, deterministic alternative to spinning up a live MCP server
+# in CI — the trace IS the contract.
+#
+# What it catches:
+#   - Your client code stops handling `initialize` / `tools/list` / `tools/call`
+#     responses correctly.
+#   - You bumped the @modelcontextprotocol/sdk version and a wire-shape changed.
+#   - You touched the fixture and forgot to update the assertions (or vice-versa).
+#
+# When the recorded conversation needs to change (new tool, renamed argument),
+# regenerate `fixture.mcptrace` with `mcp-devtools record ...`, update the
+# assertions in `client-test.mjs`, commit both together. The fixture is the
+# source of truth; this workflow just enforces that the client agrees with it.
+name: replay-snapshot
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  snapshot:
+    name: replay snapshot test
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        # Pin to specific versions in your real repo. `latest` here is the
+        # example-repo convention.
+        run: |
+          set -euo pipefail
+          npm install --no-audit --no-fund \
+            '@adityachilka/mcp-devtools@latest' \
+            '@modelcontextprotocol/sdk@latest'
+      - name: Run replay snapshot test
+        # client-test.mjs spawns the replay server itself and asserts each
+        # response matches the recorded fixture. Exit 0 = green, 1 = red.
+        run: node ./client-test.mjs

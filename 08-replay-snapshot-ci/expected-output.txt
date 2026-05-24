@@ -1,0 +1,23 @@
+# Sample terminal output from: ./run-locally.sh
+# The five "PASS" lines and the final "snapshot test passed" line are what
+# the matching GitHub Actions workflow keys its exit code off of.
+============================================================
+ mcp-devtools example 08 - replay snapshot test (local mirror)
+============================================================
+  1. fixture trace: ./fixture.mcptrace
+  2. replay server: mcp-devtools serve --replay ...
+  3. driving client: client-test.mjs (@modelcontextprotocol/sdk)
+============================================================
+
+[1/2] starting replay server and client ...
+[client-test] spawning replay server: node ./node_modules/@adityachilka/mcp-devtools/dist/cli.js serve --replay ./fixture.mcptrace --quiet
+  PASS  initialize returns the fixture serverInfo
+  PASS  tools/list returns 2 tools in trace order
+  PASS  every tool carries description + inputSchema
+  PASS  tools/call add(2,3) replays '5'
+  PASS  tools/call echo replays the recorded text
+
+==> all assertions passed against the replayed trace.
+
+[2/2] client exit code: 0
+==> snapshot test passed. Safe to push.
