@@ -1,0 +1,71 @@
+# Rename to `.github/workflows/cost-budget.yml` in your real repo.
+#
+# This workflow runs `mcp-devtools summary <trace> --model <id> --json`
+# against a committed `.mcptrace` fixture on every pull request and every
+# push to `main`, then fails the build if the estimated USD cost exceeds
+# $BUDGET_USD. It's the cost regression complement to:
+#
+#   - 07-doctor-ci          — protocol-compliance regression
+#   - 08-replay-snapshot-ci — client-side output regression
+#
+# What it catches:
+#   - A prompt template grew and is now shipping more tokens per call than
+#     intended.
+#   - A new tool was added and its responses are an order of magnitude
+#     larger than the others.
+#   - A retry loop was introduced and every recorded conversation now
+#     makes 2× the tools/call frames it used to.
+#
+# The fixture is the source of truth — re-record it (with `mcp-devtools
+# record`) when you intend the cost to change, and bump BUDGET_USD in the
+# same commit.
+name: cost-budget
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  budget:
+    name: mcp-devtools summary budget gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    env:
+      # The dollar ceiling for the recorded session. Bump this in the same
+      # commit that intentionally grows the conversation; otherwise the
+      # build going red is exactly the alarm you want.
+      BUDGET_USD: "0.01"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install mcp-devtools
+        # Pin to a specific version in your real repo. `latest` is shown
+        # here only because this is an example repo.
+        run: npm install --no-audit --no-fund -g '@adityachilka/mcp-devtools@latest'
+
+      - name: Check recorded-session cost against budget
+        # `check-budget.sh` runs `summary --model gpt-4o-mini --json`,
+        # parses `.cost.totalUsd` via `jq`, and exits 1 on overage. The
+        # script prints the exact cost AND budget on every run so the CI
+        # log is a complete audit trail.
+        run: |
+          set -euo pipefail
+          chmod +x ./check-budget.sh
+          ./check-budget.sh
+
+      - name: Upload summary report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: summary-report
+          path: summary-report.json
+          if-no-files-found: ignore

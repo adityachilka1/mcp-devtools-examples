@@ -1,0 +1,31 @@
+# Sample terminal output from: ./run-locally.sh
+# (with MCP_DEVTOOLS_PKG=file:/path/to/...0.1.x.tgz so `summary` resolves
+# even before v0.1.x ships on npm.)
+#
+# The "==> under budget" line and the trailing "Safe to push." are what the
+# matching GitHub Actions workflow keys its exit code off of via
+# check-budget.sh.
+============================================================
+ mcp-devtools example 09 - cost budget alert (local mirror)
+============================================================
+  1. fixture trace : ./fixture.mcptrace
+  2. summariser    : mcp-devtools summary --model gpt-4o-mini --json
+  3. gate          : .cost.totalUsd <= $0.05
+============================================================
+
+[1/2] running check-budget.sh ...
+[1/3] summarising trace: ./fixture.mcptrace
+       model: gpt-4o-mini
+      budget: $0.05
+[2/3] parsing cost from report ...
+[3/3] comparing against budget ...
+
+  total cost      : $0.0000492
+  budget          : $0.05
+  priced calls    : 2 / 2
+  basis           : cloud-tokens
+
+==> under budget: $0.0000492 <= $0.05. Safe to push.
+
+[2/2] check-budget exit code: 0
+==> budget gate passed. Safe to push.
