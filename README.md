@@ -25,6 +25,7 @@ Each example is a self-contained directory you can `cd` into and run in under a 
 | [`06-embed-mode-walkthrough`](./06-embed-mode-walkthrough) | Use `devtools.wrap(transport)` to bake the inspector into your own MCP server in-process — same observability as the proxy, no child process, no stdio dance. |
 | [`07-doctor-ci`](./07-doctor-ci) | Wire `mcp-devtools doctor --json` into a GitHub Actions workflow that fails CI on protocol-compliance regressions (missing tool fields, malformed envelopes, dropped `tools/list`). |
 | [`08-replay-snapshot-ci`](./08-replay-snapshot-ci) | Commit a recorded `.mcptrace` as a test fixture and replay it via `serve --replay` so client snapshot tests run against a deterministic, vendor-free MCP backend in CI. |
+| [`09-cost-budget-alert`](./09-cost-budget-alert) | Wire `mcp-devtools summary --model --json` into GitHub Actions so a recorded session's estimated USD cost gates the build — catch prompt-growth and tool-call creep regressions before they ship. |
 
 ## Quick start
 
